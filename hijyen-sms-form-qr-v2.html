@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hijyen Takip – Tuvalet Durum Formu</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#0f1622;
+      --card:#111a28;
+      --text:#e6edf3;
+      --muted:#9aa6b2;
+      --ok:#16a34a;
+      --warn:#f59e0b;
+      --bad:#dc2626;
+      --accent:#7dd3fc;
+    }
+    *{box-sizing:border-box}
+    html, body { height:100%; }
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;
+      background:linear-gradient(180deg,#0b0f14 0%, #0e1520 100%);
+      color:var(--text);
+      min-height:100dvh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+    .wrap{ width:100%; max-width:900px; }
+    .header{
+      margin-bottom:14px;
+      display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    }
+    .badge{
+      background:rgba(125,211,252,.15);
+      border:1px solid rgba(125,211,252,.35);
+      color:#d0f0ff;
+      padding:6px 10px; border-radius:999px; font-size:12px; font-weight:600;
+    }
+    h1{ margin:0; font-size:clamp(22px,3.2vw,30px); letter-spacing:.2px; }
+    .subtitle{
+      margin:6px 0 16px 0; color:var(--muted); font-size:14px; line-height:1.5;
+    }
+    .layout{
+      display:grid; gap:16px;
+      grid-template-columns:1fr;
+    }
+    @media (min-width:860px){
+      .layout{ grid-template-columns: 1.1fr .9fr; }
+    }
+    .card{
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.07);
+      border-radius:18px; padding:18px;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    .form-grid{
+      display:grid; gap:12px;
+      grid-template-columns:1fr;
+    }
+    @media (min-width:560px){
+      .form-grid{ grid-template-columns:repeat(2,1fr); }
+    }
+    label{ font-size:12px; color:var(--muted); display:block; margin-bottom:6px; }
+    input, select{
+      width:100%; padding:12px 12px;
+      background:#0f1622; border:1px solid rgba(255,255,255,.08);
+      border-radius:12px; color:var(--text);
+      outline:none;
+    }
+    input::placeholder{ color:#7a8794; }
+    .buttons{ display:grid; grid-template-columns:1fr; gap:10px; margin-top:14px; }
+    @media (min-width:560px){
+      .buttons{ grid-template-columns:repeat(3,1fr); }
+    }
+    button{
+      width:100%; padding:14px 14px; border-radius:14px;
+      background:#151e2b; border:1px solid rgba(255,255,255,.08);
+      color:var(--text); font-weight:700; font-size:15px; letter-spacing:.2px;
+      cursor:pointer; transition:transform .06s ease, border-color .2s ease;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+    }
+    button:hover{ transform:translateY(-1px); }
+    .ok{ border-color:rgba(22,163,74,.45); }
+    .warn{ border-color:rgba(245,158,11,.5); }
+    .bad{ border-color:rgba(220,38,38,.5); }
+    .hint{ margin-top:10px; color:var(--muted); font-size:12px; }
+    .qr-wrap{ display:flex; align-items:center; justify-content:center; padding:12px; }
+    .qr-box{
+      background:var(--panel);
+      border:1px dashed rgba(255,255,255,.1);
+      border-radius:16px; padding:16px;
+      display:flex; flex-direction:column; align-items:center; gap:10px;
+    }
+    #qrcode { background:white; padding:10px; border-radius:10px; }
+    .url-small{ word-break:break-all; font-size:11px; color:var(--muted); max-width:100%; text-align:center;}
+    .footer{ margin-top:10px; color:var(--muted); font-size:12px; text-align:center; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="badge">Hijyen Takip</div>
+      <h1>Tuvalet Durum Formu</h1>
+    </div>
+    <p class="subtitle">
+      <strong>Açıklama:</strong> Bu form SMS ile temizlik bildirimi gönderir. Hangi tuvalet olduğunu netleştirmek için
+      <em>Bina/Bölüm</em>, <em>Kat</em>, <em>Koridor/Kanat</em>, <em>Tuvalet Kodu/No</em> ve <em>Cinsiyet</em> alanlarını doldurun.
+      QR kod, bu sayfanın adresini içerir; hastane telefonu QR okuttuğunda form açılır.
+    </p>
+    <div class="layout">
+      <!-- Left: Form + Buttons -->
+      <div class="card">
+        <div class="form-grid">
+          <div>
+            <label for="building">Bina / Bölüm</label>
+            <input id="building" placeholder="Örn: A Blok, Acil Servis">
+          </div>
+          <div>
+            <label for="floor">Kat</label>
+            <select id="floor">
+              <option value="">Seçin…</option>
+              <option value="-2">-2 – Bodrum</option>
+              <option value="-1">-1 – Acil</option>
+              <option value="0">0 – Zemin (Poliklinik giriş)</option>
+              <option value="1">1. Kat</option>
+              <option value="2">2. Kat</option>
+              <option value="3">3. Kat</option>
+              <option value="4">4. Kat</option>
+            </select>
+          </div>
+          <div>
+            <label for="corridor">Koridor / Kanat</label>
+            <input id="corridor" placeholder="Örn: Kuzey Koridoru">
+          </div>
+          <div>
+            <label for="toilet">Tuvalet Kodu / No</label>
+            <input id="toilet" placeholder="Örn: WC-E-12">
+          </div>
+          <div>
+            <label for="gender">Cinsiyet</label>
+            <select id="gender">
+              <option value="">Seçin…</option>
+              <option>Erkek</option>
+              <option>Kadın</option>
+              <option>Unisex</option>
+              <option>Engelli</option>
+            </select>
+          </div>
+          <div>
+            <label for="notes">Ek Not (opsiyonel)</label>
+            <input id="notes" placeholder="Örn: Koku, malzeme eksik vb.">
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button class="ok"   onclick="sendStatus('Hijyen Takip Sistemi bildirimi: Tuvalet TEMİZ.')">✅ Temiz</button>
+          <button class="warn" onclick="sendStatus('Hijyen Takip Sistemi bildirimi: Tuvalet AZ KİRLİ, kontrol gerekli.')">⚠️ Az Kirli</button>
+          <button class="bad"  onclick="sendStatus('Hijyen Takip Sistemi bildirimi: Tuvalet ÇOK KİRLİ, acil temizlik gerekli.')">❌ Çok Kirli</button>
+        </div>
+        <div class="hint">
+          Alıcılar: 05432130302, 05074374311 — <strong>sms:</strong> bağlantıları mobil cihazlarda çalışır.
+        </div>
+      </div>
+
+      <!-- Right: QR -->
+      <div class="card qr-wrap">
+        <div class="qr-box">
+          <div id="qrcode"></div>
+          <div class="url-small" id="qr-url"></div>
+          <div class="hint">Bu sayfanın adresini QR olarak gömülü gösterir.</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">© Hijyen Takip – Form ve QR tek dosyada.</div>
+  </div>
+
+  <!-- Minimal QRCode generator (qrcode.js by Kazuhiko Arase, MIT License) -->
+  <script>
+/*! qrcode.js v1.0.0 (MIT) (stripped build for QR generation) */
+(function(o){function p(a){this.mode=q.MODE_8BIT_BYTE;this.data=a}function r(a){this.totalCount=a;this.dataCount=a}function t(a){this.buffer=new Array;this.length=0;this.put=function(b,c){for(var d=0;d<c;d++)this.putBit((b>>>d&1)==1)};this.putBit=function(b){this.buffer.push(b);this.length++}}var q=function(a,b){this.typeNumber=a;this.errorCorrectLevel=b;this.modules=null;this.moduleCount=0;this.dataList=[]};q.prototype={addData:function(a){this.dataList.push(new p(a))},isDark:function(a,b){if(this.modules[a][b]!=null)return this.modules[a][b];throw Error(a+","+b);},getModuleCount:function(){return this.moduleCount},make:function(){u(this.typeNumber,this.errorCorrectLevel,this.dataList,this)},};var u=function(a,b,c,d){var e=1;d.typeNumber=e;d.moduleCount=4*d.typeNumber+17;d.modules=new Array(d.moduleCount);for(var i=0;i<d.moduleCount;i++){d.modules[i]=new Array(d.moduleCount);for(var j=0;j<d.moduleCount;j++)d.modules[i][j]=null}v(d,0,0);w(d,6,6);x(d,6,d.moduleCount-7);y(d,d.moduleCount-7,6);var z=new t;for(i=0;i<c.length;i++){var A=encodeURIComponent(c[i].data);for(j=0;j<A.length;j++)z.put(A.charCodeAt(j),8)}B(d,z.buffer)};function v(a,b,c){for(var i=-1;i<=7;i++)if(!(b+i<=-1||a.moduleCount<=b+i))for(var j=-1;j<=7;j++){if(!(c+j<=-1||a.moduleCount<=c+j))a.modules[b+i][c+j]=i>=0&&i<=6&&(j==0||j==6)||j>=0&&j<=6&&(i==0||i==6)||i>=2&&i<=4&&j>=2&&j<=4}}function w(a,b,c){for(var i=0;i<8;i++){a.modules[b][c+i]=i%2==0;a.modules[b+i][c]=i%2==0}}function x(a,b,c){w(a,b-7,c);v(a,b-7,c-7)}function y(a,b,c){w(a,b,c-7);v(a,b-7,c-7)}function B(a,b){for(var i=0,k=0;i<a.moduleCount;i++)for(var j=0;j<a.moduleCount;j++)a.modules[i][j]=k<b.length?b[k++]==1:false}o.QRCode=q})(this);
+  </script>
+
+  <script>
+    // Recipients
+    const RECIPIENTS = ["05432130302","05074374311"];
+
+    // Build sms: platform-aware
+    function buildSmsLink(recipients, body){
+      const ua = navigator.userAgent || navigator.vendor || "";
+      const isIOS = /iPad|iPhone|iPod/.test(ua);
+      const sep = isIOS ? "," : ";";
+      const base = "sms:" + recipients.join(sep);
+      const paramJoin = isIOS ? "&" : "?";
+      return base + paramJoin + "body=" + encodeURIComponent(body);
+    }
+
+    // Compose location line
+    function getLocationLine(){
+      const building = (document.getElementById('building').value || '').trim();
+      const floor    = (document.getElementById('floor').value || '').trim();
+      const corridor = (document.getElementById('corridor').value || '').trim();
+      const toilet   = (document.getElementById('toilet').value || '').trim();
+      const gender   = (document.getElementById('gender').value || '').trim();
+      const notes    = (document.getElementById('notes').value || '').trim();
+
+      const miss = [];
+      if(!building) miss.push("Bina/Bölüm");
+      if(!floor) miss.push("Kat");
+      if(!corridor) miss.push("Koridor/Kanat");
+      if(!toilet) miss.push("Tuvalet Kodu/No");
+      if(!gender) miss.push("Cinsiyet");
+      if(miss.length){
+        alert("Lütfen şu alanları doldurun: " + miss.join(", "));
+        return null;
+      }
+      // Save to localStorage
+      const payload = {building,floor,corridor,toilet,gender,notes};
+      localStorage.setItem("hygiene-form", JSON.stringify(payload));
+
+      // Pretty label for floor
+      const floorLabelMap = {
+        "-2": "-2 – Bodrum",
+        "-1": "-1 – Acil",
+        "0":  "0 – Zemin (Poliklinik giriş)",
+        "1":  "1. Kat",
+        "2":  "2. Kat",
+        "3":  "3. Kat",
+        "4":  "4. Kat"
+      };
+      const floorLabel = floorLabelMap[floor] || `Kat ${floor}`;
+
+      let loc = `Konum: ${building}, ${floorLabel}, ${corridor}, ${toilet}, ${gender}`;
+      if(notes) loc += ` | Not: ${notes}`;
+      return loc;
+    }
+
+    function sendStatus(prefix){
+      const loc = getLocationLine();
+      if(!loc) return;
+      const message = `${prefix}\n${loc}`;
+      const href = buildSmsLink(RECIPIENTS, message);
+      window.location.href = href;
+    }
+
+    // Restore saved values
+    (function restore(){
+      try{
+        const saved = JSON.parse(localStorage.getItem("hygiene-form") || "{}");
+        for(const [k,v] of Object.entries(saved)){
+          const el = document.getElementById(k);
+          if(el && typeof v === "string") el.value = v;
+        }
+      }catch(e){}
+    })();
+
+    // Generate QR for current URL (self-link)
+    function drawQR(){
+      const here = window.location.href;
+      const urlEl = document.getElementById('qr-url');
+      if(urlEl) urlEl.textContent = here;
+      const qrel = document.getElementById('qrcode');
+      qrel.innerHTML = "";
+      try{
+        const qr = new QRCode(1, 0);
+        qr.addData(here);
+        qr.make();
+        const count = qr.getModuleCount();
+        const scale = 6;
+        const size = count*scale;
+        const cvs = document.createElement('canvas');
+        cvs.width = size; cvs.height = size;
+        const ctx = cvs.getContext('2d');
+        ctx.fillStyle = "#ffffff"; ctx.fillRect(0,0,size,size);
+        ctx.fillStyle = "#000000";
+        for(let r=0;r<count;r++){
+          for(let c=0;c<count;c++){
+            if(qr.isDark(r,c)){
+              ctx.fillRect(c*scale, r*scale, scale, scale);
+            }
+          }
+        }
+        qrel.appendChild(cvs);
+      }catch(e){
+        qrel.textContent = "QR oluşturulamadı.";
+      }
+    }
+    drawQR();
+  </script>
+</body>
+</html>
